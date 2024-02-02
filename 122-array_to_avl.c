@@ -1,65 +1,33 @@
 #include "binary_trees.h"
-#include "limits.h"
-
-size_t height(const binary_tree_t *tree);
-int is_avl_helper(const binary_tree_t *tree, int lo, int hi);
-int binary_tree_is_avl(const binary_tree_t *tree);
 
 /**
- * height - Measures the height of a binary tree.
- * @tree: A pointer to the root node of the tree to measure the height.
+ * array_to_avl - Builds an AVL tree from an array.
+ * @array: A pointer to the first element of the array to be converted.
+ * @size: The number of elements in @array.
  *
- * Return: If tree is NULL, your function must return 0, else return height.
+ * Return: A pointer to the root node of the created AVL, or NULL upon failure.
  */
-size_t height(const binary_tree_t *tree)
+avl_t *array_to_avl(int *array, size_t size)
 {
-	if (tree)
+	avl_t *tree = NULL;
+	size_t i, j;
+
+	if (array == NULL)
+		return (NULL);
+
+	for (i = 0; i < size; i++)
 	{
-		size_t l = 0, r = 0;
-
-		l = tree->left ? 1 + height(tree->left) : 1;
-		r = tree->right ? 1 + height(tree->right) : 1;
-		return ((l > r) ? l : r);
+		for (j = 0; j < i; j++)
+		{
+			if (array[j] == array[i])
+				break;
+		}
+		if (j == i)
+		{
+			if (avl_insert(&tree, array[i]) == NULL)
+				return (NULL);
+		}
 	}
-	return (0);
-}
 
-/**
- * is_avl_helper - Checks if a binary tree is a valid AVL tree.
- * @tree: A pointer to the root node of the tree to check.
- * @lo: The value of the smallest node visited thus far.
- * @hi: The value of the largest node visited this far.
- *
- * Return: If the tree is a valid AVL tree, 1, otherwise, 0.
- */
-int is_avl_helper(const binary_tree_t *tree, int lo, int hi)
-{
-	size_t lhgt, rhgt, diff;
-
-	if (tree != NULL)
-	{
-		if (tree->n < lo || tree->n > hi)
-			return (0);
-		lhgt = height(tree->left);
-		rhgt = height(tree->right);
-		diff = lhgt > rhgt ? lhgt - rhgt : rhgt - lhgt;
-		if (diff > 1)
-			return (0);
-		return (is_avl_helper(tree->left, lo, tree->n - 1) &&
-			is_avl_helper(tree->right, tree->n + 1, hi));
-	}
-	return (1);
-}
-
-/**
- * binary_tree_is_avl - Checks if a binary tree is a valid AVL tree.
- * @tree: A pointer to the root node of the tree to check.
- *
- * Return: 1 if tree is a valid AVL tree, and 0 otherwise
- */
-int binary_tree_is_avl(const binary_tree_t *tree)
-{
-	if (tree == NULL)
-		return (0);
-	return (is_avl_helper(tree, INT_MIN, INT_MAX));
+	return (tree);
 }

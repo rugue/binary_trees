@@ -88,4 +88,61 @@ void swap(heap_t **arg_node, heap_t **arg_child)
 		}
 		if (node->parent)
 		{
+			if (node->parent->left == node)
+				node->parent->left = child;
+			else
+				node->parent->right = child;
+		}
+		parent = node->parent, child->parent = parent;
+		node->parent = child, node->left = node_left;
+		node->right = node_right, *arg_node = child;
+	}
+}
 
+/**
+ * heap_insert - function that inserts a value in Max Binary Heap
+ * @value: value to be inserted
+ * @root: tree root
+ * Return: pointer to the created node, or NULL on failure.
+ */
+heap_t *heap_insert(heap_t **root, int value)
+{
+	heap_t *new_node;
+
+	if (*root == NULL)
+	{
+		*root = binary_tree_node(NULL, value);
+		return (*root);
+	}
+
+	if (binary_tree_is_perfect(*root) || !binary_tree_is_perfect((*root)->left))
+	{
+		if ((*root)->left)
+		{
+			new_node = heap_insert(&((*root)->left), value);
+			swap(root, &((*root)->left));
+			return (new_node);
+		}
+		else
+		{
+			new_node = (*root)->left = binary_tree_node(*root, value);
+			swap(root, &((*root)->left));
+			return (new_node);
+		}
+	}
+
+	if ((*root)->right)
+	{
+		new_node = heap_insert(&((*root)->right), value);
+		swap(root, (&(*root)->right));
+		return (new_node);
+	}
+	else
+	{
+		new_node = (*root)->right = binary_tree_node(*root, value);
+		swap(root, &((*root)->right));
+		return (new_node);
+	}
+
+	return (NULL);
+}
